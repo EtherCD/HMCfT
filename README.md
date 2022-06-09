@@ -5,4 +5,4 @@ Handy Model Creator for Textures (Python)
 1. Start the file
 2. Put your modid
 3. And reopen file
-4. And enjoy
+4. And enjoy!
