@@ -39,7 +39,7 @@ fileConfig = '{\n"modid": "",\n"exceptions": [],\n"lang": {}\n}'
 configName = "./hmcft_config.json"
 config = loadConfig(configName, fileConfig)
 
-dirLangName = f'./src/main/recources/assets/{config["modid"]}'
+dirLangName = f'./src/main/resources/assets/{config["modid"]}/lang/'
 
 dirItemTextureName = f'./src/main/resources/assets/{config["modid"]}/textures/items/'
 dirItemModelName = f'./src/main/resources/assets/{config["modid"]}/models/item/'
@@ -60,6 +60,15 @@ def dirItemsTextureLoader(dirName, config):
     for file in files:
         file_Name=isFile(file)
         if not file_Name in exceptions:
+            raw_arr.append(file_Name)
+    return [el for el, _ in groupby(raw_arr)]
+
+def dirLangLoader(dirName):
+    files=getFilesFromDir(dirName)
+    raw_arr=[]
+    for file in files:
+        file_Name=isFile(file)
+        if file_Name != "o":
             raw_arr.append(file_Name)
     return [el for el, _ in groupby(raw_arr)]
 
@@ -84,8 +93,44 @@ def mainItems(dirItems, dirItem):
         if not item in arr_item:
             createItemModelFile(item)
             print("Element ", item, " is aded!")
+    print("Done!")
 
-def mainLang(dirLangName): pass
+def openFile(dirName ,fileName):
+    with open(dirName+fileName) as f:
+        arr = f.read()
+    return arr
+
+def langFileLoader(dirLangName, FileName):
+    lines = openFile(dirLangName, FileName)
+    raw_arr = re.findall(r'item.(\w+).name=\w+', lines)
+    #arr = re.findall(r'(\w+)', lines)
+    #print(arr)
+    #if arr != []:
+    #    return raw_arr.extend(arr)
+    return raw_arr
+
+def langFileRegister(dirLangName, FileName, toWrite):
+    with open(dirLangName+FileName, "r+") as f:
+        f.seek(0, 2)
+        f.write(toWrite)
+
+def mainLang(dirLangName, dirItem): 
+    lang_files_arr = dirLangLoader(dirLangName)
+    c_name = lang_files_arr[0]+".lang"
+    arr = langFileLoader(dirLangName, c_name)
+    arr_item=dirItemsModelLoader(dirItem)
+    other_arr = []
+    for item in arr_item:
+        if not item in arr:
+            a = input(f"Put name for {item} (Or enter nothing):")
+            if a != "":
+                other_arr.append(f"item.{item}.name={a}")
+    for lang_file in lang_files_arr:
+        current_name = lang_file+".lang"
+        for elem in other_arr:
+            langFileRegister(dirLangName, current_name, "\n"+elem+"\n")
+            print(f"Element '{elem}' is aded! In {lang_file}")
+    print("Done")
 
 def main():
     if testConfig(config):
@@ -102,7 +147,7 @@ def main():
     if inp==1:
         mainItems(dirItemTextureName, dirItemModelName)
     elif inp=="2":
-        pass
+        mainLang(dirLangName, dirItemModelName)
     elif inp=="3":
         print("Settings")
         print("1 - change modid")
@@ -123,7 +168,6 @@ def main():
         print("There is no such option!")
 
 main()
-
 #createItemModelFile("test")
 #print(dirItemsModelLoader(dirItemModelName))
 #print(dirItemsTextureLoader(dirItemTextureName))
