@@ -78,6 +78,12 @@ def langFileLoader(dirLangName, FileName):
     #    return raw_arr.extend(arr)
     return raw_arr
 
+def langFileRegister(dirLangName, FileName, toWrite):
+    with open(dirLangName+FileName, "r+") as f:
+        f.seek(0, 2)
+        f.write(toWrite)
+        f.close()
+
 #Constan's
 text_start="""Welcome to HMCfT!
 1 - Start create items model .json
@@ -89,7 +95,7 @@ text_settings="""Settings
 2 - Add exception
 3 - Change/Delate exception"""
 
-fileConfig = '{\n"modid": "",\n"exceptions": [],\n"lang": {}\n}'
+fileConfig = '{"modid": "","exceptions": [],"lang": {}}'
 configName = "./hmcft_config.json"
 config = loadConfig(configName, fileConfig)
 
@@ -127,8 +133,8 @@ def dirItemsModelLoader(dirName):
             raw_arr.append(file_Name)
     return [el for el, _ in groupby(raw_arr)]
 
-def mainItems(dirItems, dirItem):
-    arr_items=dirItemsTextureLoader(dirItems)
+def mainItems(dirItems, dirItem, config):
+    arr_items=dirItemsTextureLoader(dirItems, config)
     arr_item=dirItemsModelLoader(dirItem)
     for item in arr_items:
         if not item in arr_item:
@@ -136,23 +142,23 @@ def mainItems(dirItems, dirItem):
             print("Element ", item, " is aded!")
     print("Done!")
 
-def langFileRegister(dirLangName, FileName, toWrite):
-    with open(dirLangName+FileName, "r+") as f:
-        f.seek(0, 2)
-        f.write(toWrite)
-
 def mainLang(dirLangName, dirItem): 
     lang_files_arr = dirLangLoader(dirLangName)
     c_name = lang_files_arr[0]+".lang"
     arr = langFileLoader(dirLangName, c_name)
     arr_item=dirItemsModelLoader(dirItem)
-    other_arr = []
-    for item in arr_item:
-        if not item in arr:
-            a = input(f"Put name for {item} (Or enter nothing):")
-            if a != "":
-                other_arr.append(f"item.{item}.name={a}")
+   
     for lang_file in lang_files_arr:
+        other_arr = []
+        a=input(f"Want to write translations for subjects in {lang_file} (y/n):").lower()
+        if a!="y":continue
+        for item in arr_item:
+            if not item in arr:
+                a = input(f"Put name for {item} (Or enter nothing):")
+                if a != "":
+                    other_arr.append(f"item.{item}.name={a}")
+        b=input(f"Append all translations to file {lang_file}? (y/n):").lower()
+        if b!="y":continue
         current_name = lang_file+".lang"
         for elem in other_arr:
             langFileRegister(dirLangName, current_name, "\n"+elem+"\n")
@@ -168,8 +174,8 @@ def main():
 
     print(text_start)
     inp = input(":")
-    if inp==1:
-        mainItems(dirItemTextureName, dirItemModelName)
+    if inp=="1":
+        mainItems(dirItemTextureName, dirItemModelName, config)
     elif inp=="2":
         mainLang(dirLangName, dirItemModelName)
     elif inp=="3":
@@ -196,6 +202,7 @@ def main():
         print(dirItemsModelLoader(dirItemModelName))
     else:
         print("There is no such option!")
+        
 
 main() #Record in 200 lines!
 #createItemModelFile("test")
