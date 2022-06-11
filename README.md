@@ -9,7 +9,7 @@ Automates the creation of model files for textures. Also helps with translations
 In code comments!
 
 # How to run!
-* Start the file
-* Put your modid
+* `python HMCfT.py`
+* `put Modid: {modid}`
 * And reopen file
 * And enjoy!
