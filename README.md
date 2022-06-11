@@ -5,8 +5,11 @@ For java mod project on forge
 
 Automates the creation of model files for textures. Also helps with translations in all .lang files
 
+# API
+In code comments!
+
 # How to run!
-1. Start the file
-2. Put your modid
-3. And reopen file
-4. And enjoy!
+* Start the file
+* Put your modid
+* And reopen file
+* And enjoy!
